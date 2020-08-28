@@ -1,9 +1,29 @@
 import express from 'express';
+import { createConnection } from 'typeorm';
 
 import routes from './routes';
 
-const app = express();
+class App {
+  public server: express.Application;
 
-app.use(routes);
+  constructor() {
+    this.server = express();
 
-export default app;
+    this.middlewares();
+    this.routes();
+    this.database();
+  }
+
+  private middlewares(): void {
+    this.server.use(express.json());
+  }
+  private async database(): Promise<void> {
+    await createConnection();
+  }
+
+  private routes(): void {
+    this.server.use(routes);
+  }
+}
+
+export default new App().server;
